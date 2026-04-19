@@ -25,7 +25,7 @@ import {
   toLobbyError,
   updatePlayerSelection,
 } from "@/lib/lobby-supabase";
-import { supabase } from "@/lib/supabase";
+import { getSupabase, missingSupabaseEnvErrorMessage } from "@/lib/supabase";
 import type { LobbyPlayer, RoomRecord } from "@/types/lobby";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SharedRoomGame } from "@/components/shared-room-game";
@@ -283,7 +283,13 @@ export function RoomLobby({
           return t("roomLobby.championSeatRule");
         case "That slot is already taken.":
           return t("roomLobby.slotTaken");
+        case missingSupabaseEnvErrorMessage:
+          return t("roomLobby.supabaseConfigMissing");
         default:
+          if (message.toLowerCase().includes("failed to fetch")) {
+            return t("roomLobby.networkRequestFailed");
+          }
+
           return message;
       }
     },
@@ -409,7 +415,18 @@ export function RoomLobby({
       return;
     }
 
-    const channel = supabase
+    let realtimeClient;
+
+    try {
+      realtimeClient = getSupabase();
+    } catch (error) {
+      const normalizedError = toLobbyError(error);
+      console.error("Lobby realtime setup failed:", error);
+      setErrorMessage(lobbyUiError(normalizedError.message));
+      return;
+    }
+
+    const channel = realtimeClient
       .channel(`room-${room.id}`)
       .on(
         "postgres_changes",
@@ -439,9 +456,9 @@ export function RoomLobby({
       .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel);
+      void realtimeClient.removeChannel(channel);
     };
-  }, [refreshPlayersForRoom, room?.id, loadLobby]);
+  }, [lobbyUiError, loadLobby, refreshPlayersForRoom, room?.id]);
 
   const leaveCurrentRoom = useCallback(async (reason: string = "unknown") => {
     const currentRoom = roomRef.current;

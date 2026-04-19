@@ -185,6 +185,10 @@ const fr = {
       enterRoomCode: "Entrez un code de room.",
       invalidRoomCode: "Entrez un code de room valide de 6 caracteres.",
       roomNotFound: "Room introuvable.",
+      supabaseConfigMissing:
+        "Le service des rooms n'est pas configurÃ© en production. Ajoutez l'URL publique Supabase et la clÃ© anonyme sur Vercel.",
+      networkRequestFailed:
+        "Impossible de joindre le service des rooms pour le moment. VÃ©rifiez la console du navigateur et la configuration Supabase en production.",
     },
   },
   game: {
@@ -297,6 +301,10 @@ const fr = {
     reshuffled: "{count} joueur(s) reassignes.",
     roomNotFound: "Room introuvable.",
     enterDisplayNameToJoin: "Entrez un nom d'affichage pour rejoindre ce lobby.",
+    supabaseConfigMissing:
+      "Le service des rooms n'est pas configurÃ© en production. Ajoutez l'URL publique Supabase et la clÃ© anonyme sur Vercel.",
+    networkRequestFailed:
+      "Impossible de joindre le service des rooms pour le moment. VÃ©rifiez la console du navigateur et la configuration Supabase en production.",
     blueSummoner: "Invocateur bleu",
     redSummoner: "Invocateur rouge",
     blueChampion: "Champion bleu {index}",

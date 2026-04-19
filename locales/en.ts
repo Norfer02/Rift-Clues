@@ -178,6 +178,10 @@ const en = {
       enterRoomCode: "Enter a room code.",
       invalidRoomCode: "Enter a valid 6-character room code.",
       roomNotFound: "Room not found.",
+      supabaseConfigMissing:
+        "Room services are not configured in production yet. Add the Supabase public URL and anon key on Vercel.",
+      networkRequestFailed:
+        "Unable to reach the room service right now. Check the browser console and your production Supabase settings.",
     },
   },
   game: {
@@ -290,6 +294,10 @@ const en = {
     reshuffled: "{count} player(s) reshuffled.",
     roomNotFound: "Room not found.",
     enterDisplayNameToJoin: "Enter a display name to join this lobby.",
+    supabaseConfigMissing:
+      "Room services are not configured in production yet. Add the Supabase public URL and anon key on Vercel.",
+    networkRequestFailed:
+      "Unable to reach the room service right now. Check the browser console and your production Supabase settings.",
     blueSummoner: "Blue Summoner",
     redSummoner: "Red Summoner",
     blueChampion: "Blue Champion {index}",

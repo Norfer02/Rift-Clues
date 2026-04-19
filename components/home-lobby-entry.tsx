@@ -17,6 +17,7 @@ import {
 import { generateRoomCode } from "@/lib/room-code";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { missingSupabaseEnvErrorMessage } from "@/lib/supabase";
 
 function toErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -59,7 +60,13 @@ export function HomeLobbyEntry() {
         return t("landing.errors.invalidRoomCode");
       case "Room not found.":
         return t("landing.errors.roomNotFound");
+      case missingSupabaseEnvErrorMessage:
+        return t("landing.errors.supabaseConfigMissing");
       default:
+        if (message.toLowerCase().includes("failed to fetch")) {
+          return t("landing.errors.networkRequestFailed");
+        }
+
         return message;
     }
   };
@@ -118,10 +125,7 @@ export function HomeLobbyEntry() {
 
       setErrorMessage(t("landing.errors.unableCreateRoom"));
     } catch (error) {
-      console.error(
-        "Create room failed:",
-        error instanceof Error ? error.message : JSON.stringify(error),
-      );
+      console.error("Create room failed:", error);
       setErrorMessage(lobbyErrorMessage(toErrorMessage(error)));
     } finally {
       setLoadingAction(null);
@@ -167,7 +171,7 @@ export function HomeLobbyEntry() {
       router.push(`/room/${room.code}`);
     } catch (error) {
       const normalizedError = toLobbyError(error);
-      console.error("Join room failed:", normalizedError.message);
+      console.error("Join room failed:", error);
       setErrorMessage(lobbyErrorMessage(normalizedError.message));
     } finally {
       setLoadingAction(null);
