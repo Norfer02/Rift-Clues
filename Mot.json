@@ -1,0 +1,18 @@
+[
+  "Ahri","Garen","Lux","Teemo","Yasuo","Zed","Jinx","Darius","Katarina","Ashe",
+  "Ezreal","Thresh","LeeSin","Riven","Vayne","Morgana","Kayn","Akali","Draven","Sona",
+
+  "Demacia","Noxus","Ionia","Piltover","Zaun","Shurima","Freljord","Targon","Void","Bilgewater",
+
+  "Baron","Nashor","Drake","Elder","Herald","Dragon","Buff","BlueBuff","RedBuff","Scuttle",
+
+  "Toplane","Midlane","Botlane","Jungle","River","Base","Tower","Inhibitor","Nexus","Ward",
+
+  "Gank","Farm","Push","Dive","Roam","Recall","Flash","Ignite","Smite","Heal",
+
+  "Tank","Mage","Assassin","Support","ADC","Bruiser","Carry","Jungler","Enchanter","Marksman",
+
+  "InfinityEdge","Rabadon","Zhonyas","Trinity","BlackCleaver","Bloodthirster","PhantomDancer","Warmog","Sunfire","Kraken",
+
+  "Cooldown","Mana","Energy","Shield","Damage","Critical","Scaling","Vision","Stealth","CC"
+]

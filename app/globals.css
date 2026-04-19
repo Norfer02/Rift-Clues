@@ -1,0 +1,1365 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --rift-ease-standard: cubic-bezier(0.2, 0.82, 0.2, 1);
+  --rift-ease-emphasis: cubic-bezier(0.22, 0.9, 0.26, 1);
+  --rift-duration-fast: 160ms;
+  --rift-duration-medium: 260ms;
+  --rift-duration-slow: 420ms;
+  --rift-lift-sm: translate3d(0, -2px, 0) scale(1.012);
+  --rift-lift-md: translate3d(0, -4px, 0) scale(1.018);
+  --rift-sheen: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 18%,
+    rgba(255, 255, 255, 0.16) 34%,
+    rgba(255, 255, 255, 0.04) 52%,
+    transparent 70%
+  );
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(246, 196, 83, 0.16), transparent 30%),
+    linear-gradient(180deg, #08101d 0%, #0f172a 100%);
+  color: #e2e8f0;
+  font-family:
+    "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(246, 196, 83, 0.35);
+}
+
+@keyframes wrong-pick-flash {
+  0% {
+    opacity: 0;
+  }
+
+  34% {
+    opacity: 1;
+  }
+
+  62% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rift-wrong-pick-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-4px);
+  }
+
+  40% {
+    transform: translateX(3px);
+  }
+
+  60% {
+    transform: translateX(-2px);
+  }
+
+  80% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes turn-overlay {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  12% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+@keyframes signal-overlay {
+  0% {
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes signal-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  16% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rift-signal-announcement {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+
+  16% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  84% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.985);
+  }
+}
+
+@keyframes rift-signal-announcement-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  22% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rift-signal-panel-pulse {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(246, 196, 83, 0.12),
+      0 10px 28px rgba(15, 23, 42, 0.14);
+    border-color: rgba(246, 196, 83, 0.22);
+    background: rgba(246, 196, 83, 0.1);
+  }
+
+  18% {
+    box-shadow:
+      0 0 0 1px rgba(246, 196, 83, 0.22),
+      0 14px 34px rgba(246, 196, 83, 0.16),
+      0 0 34px rgba(246, 196, 83, 0.16);
+    border-color: rgba(246, 196, 83, 0.4);
+    background: rgba(246, 196, 83, 0.16);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(246, 196, 83, 0.12),
+      0 10px 28px rgba(15, 23, 42, 0.14);
+    border-color: rgba(246, 196, 83, 0.22);
+    background: rgba(246, 196, 83, 0.1);
+  }
+}
+
+@keyframes rift-team-panel-pulse-blue {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(147, 197, 253, 0.42),
+      0 0 32px rgba(59, 130, 246, 0.34),
+      0 0 80px rgba(37, 99, 235, 0.36);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(191, 219, 254, 0.54),
+      0 0 44px rgba(59, 130, 246, 0.42),
+      0 0 96px rgba(37, 99, 235, 0.44);
+  }
+}
+
+@keyframes rift-team-panel-pulse-red {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(252, 165, 165, 0.42),
+      0 0 32px rgba(239, 68, 68, 0.34),
+      0 0 80px rgba(220, 38, 38, 0.36);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(254, 202, 202, 0.54),
+      0 0 44px rgba(239, 68, 68, 0.42),
+      0 0 96px rgba(220, 38, 38, 0.44);
+  }
+}
+
+@keyframes game-over-overlay {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gank-overlay {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: saturate(1.15);
+  }
+
+  15% {
+    opacity: 1;
+    transform: scale(1);
+    filter: saturate(1);
+  }
+
+  22% {
+    transform: translateX(-3px);
+  }
+
+  28% {
+    transform: translateX(3px);
+  }
+
+  34% {
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: saturate(1);
+  }
+}
+
+@keyframes game-over-text {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes khazix-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-18%) skewX(-10deg);
+  }
+
+  25% {
+    opacity: 0.42;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(18%) skewX(-10deg);
+  }
+}
+
+@keyframes khazix-flicker {
+  0%,
+  100% {
+    opacity: 0.14;
+  }
+
+  14% {
+    opacity: 0.22;
+  }
+
+  28% {
+    opacity: 0.1;
+  }
+
+  42% {
+    opacity: 0.2;
+  }
+
+  58% {
+    opacity: 0.08;
+  }
+
+  76% {
+    opacity: 0.18;
+  }
+}
+
+@keyframes rift-card-press {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  35% {
+    transform: scale(0.94);
+    filter: brightness(0.98);
+  }
+
+  72% {
+    transform: scale(1.02);
+    filter: brightness(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes rift-card-reveal {
+  0% {
+    transform: scale(0.985);
+    filter: brightness(1);
+  }
+
+  45% {
+    transform: scale(1.015);
+    filter: brightness(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes rift-card-success {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  32% {
+    transform: scale(1.04);
+    filter: brightness(1.12);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes rift-turn-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes rift-kill-streak {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1.01);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes rift-kill-streak-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-36%) skewX(-18deg);
+  }
+
+  22% {
+    opacity: 0.72;
+  }
+
+  70% {
+    opacity: 0.38;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(36%) skewX(-18deg);
+  }
+}
+
+@keyframes hunter-eyes-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hunter-pulse-rengar {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes hunter-pulse-khazix {
+  0%,
+  100% {
+    opacity: 0.85;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 1;
+    filter: brightness(1.25);
+  }
+}
+
+@keyframes hunter-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  8% {
+    opacity: 0.78;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  38% {
+    opacity: 0.9;
+  }
+
+  42% {
+    opacity: 1;
+  }
+}
+
+.animate-wrong-pick-flash {
+  animation-name: wrong-pick-flash;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.animate-rift-wrong-pick-shake {
+  animation: rift-wrong-pick-shake 360ms ease-out 160ms forwards;
+}
+
+.animate-turn-overlay {
+  animation-name: turn-overlay;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.animate-signal-overlay {
+  animation-name: signal-overlay;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.animate-signal-pop {
+  animation-name: signal-pop;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+.animate-rift-signal-announcement {
+  animation: rift-signal-announcement 1500ms cubic-bezier(0.22, 0.9, 0.26, 1)
+    forwards;
+}
+
+.animate-rift-signal-announcement-pop {
+  animation: rift-signal-announcement-pop 1500ms ease-out forwards;
+}
+
+.animate-rift-signal-panel-pulse {
+  animation: rift-signal-panel-pulse 2600ms ease-out forwards;
+}
+
+.animate-rift-team-panel-pulse-blue {
+  animation: rift-team-panel-pulse-blue 2.8s ease-in-out infinite;
+}
+
+.animate-rift-team-panel-pulse-red {
+  animation: rift-team-panel-pulse-red 2.8s ease-in-out infinite;
+}
+
+.animate-game-over-overlay {
+  animation: game-over-overlay 0.35s ease-out forwards;
+}
+
+.animate-gank-overlay {
+  animation: gank-overlay 0.45s ease-out forwards;
+}
+
+.animate-game-over-text {
+  animation: game-over-text 0.45s ease-out 0.08s both;
+}
+
+.animate-game-over-text-delayed {
+  animation: game-over-text 0.45s ease-out 0.18s both;
+}
+
+.animate-khazix-shimmer {
+  animation: khazix-shimmer 0.85s ease-in-out infinite;
+}
+
+.animate-khazix-flicker {
+  animation: khazix-flicker 0.42s steps(2, end) infinite;
+}
+
+.animate-rift-card-press {
+  animation: rift-card-press 220ms cubic-bezier(0.22, 0.9, 0.26, 1) forwards;
+}
+
+.animate-rift-card-reveal {
+  animation: rift-card-reveal 240ms cubic-bezier(0.2, 0.82, 0.2, 1) forwards;
+}
+
+.animate-rift-card-success {
+  animation: rift-card-success 520ms cubic-bezier(0.22, 0.9, 0.26, 1) forwards;
+}
+
+.animate-rift-turn-pulse {
+  animation: rift-turn-pulse 2s ease-in-out infinite;
+}
+
+.signal-number-input::-webkit-outer-spin-button,
+.signal-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.signal-number-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@keyframes rift-signal-sent-shell {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 18px 40px rgba(2, 6, 23, 0.32);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  35% {
+    transform: scale(1.012);
+    box-shadow:
+      0 0 0 1px rgba(246, 196, 83, 0.2),
+      0 18px 44px rgba(2, 6, 23, 0.36),
+      0 0 28px rgba(246, 196, 83, 0.14);
+    border-color: rgba(246, 196, 83, 0.28);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 1px rgba(246, 196, 83, 0.08),
+      0 18px 40px rgba(2, 6, 23, 0.32);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+@keyframes rift-signal-sent-content {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+    filter: drop-shadow(0 0 0 rgba(246, 196, 83, 0));
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(1.02);
+    filter: drop-shadow(0 0 12px rgba(246, 196, 83, 0.22));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0 rgba(246, 196, 83, 0));
+  }
+}
+
+@keyframes rift-signal-sent-badge {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rift-signal-sent-subtle {
+  0% {
+    opacity: 0.65;
+    transform: translateY(4px);
+    color: rgba(226, 232, 240, 0.82);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    color: rgba(226, 232, 240, 0.9);
+  }
+}
+
+.animate-rift-signal-sent-shell {
+  animation: rift-signal-sent-shell 560ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.animate-rift-signal-sent-content {
+  animation: rift-signal-sent-content 420ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.animate-rift-signal-sent-badge {
+  animation: rift-signal-sent-badge 340ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.animate-rift-signal-sent-subtle {
+  animation: rift-signal-sent-subtle 320ms ease-out;
+}
+
+@keyframes rift-command-modal {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.965);
+    box-shadow:
+      0 18px 40px rgba(2, 6, 23, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.02),
+      0 0 0 rgba(56, 189, 248, 0);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.012);
+    box-shadow:
+      0 36px 84px rgba(2, 6, 23, 0.56),
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 48px rgba(56, 189, 248, 0.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow:
+      0 32px 80px rgba(2, 6, 23, 0.58),
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      0 0 56px rgba(56, 189, 248, 0.08);
+  }
+}
+
+@keyframes rift-command-cta-ready {
+  0%,
+  100% {
+    box-shadow:
+      0 18px 36px rgba(246, 196, 83, 0.22),
+      0 0 0 rgba(246, 196, 83, 0);
+  }
+  50% {
+    box-shadow:
+      0 20px 40px rgba(246, 196, 83, 0.28),
+      0 0 18px rgba(246, 196, 83, 0.18);
+  }
+}
+
+.animate-rift-command-modal {
+  animation: rift-command-modal 340ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.animate-rift-command-cta-ready {
+  animation: rift-command-cta-ready 1.8s ease-in-out infinite;
+}
+
+@keyframes rift-command-broadcast {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.02),
+      0 0 0 rgba(246, 196, 83, 0);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 28px rgba(246, 196, 83, 0.12);
+  }
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.02),
+      0 0 0 rgba(246, 196, 83, 0);
+  }
+}
+
+@keyframes rift-command-signal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+    filter: drop-shadow(0 0 0 rgba(246, 196, 83, 0));
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(1.03);
+    filter: drop-shadow(0 0 16px rgba(246, 196, 83, 0.18));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0 rgba(246, 196, 83, 0));
+  }
+}
+
+.animate-rift-command-broadcast {
+  animation: rift-command-broadcast 600ms ease-out both;
+}
+
+.animate-rift-command-signal {
+  animation: rift-command-signal 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.animate-rift-kill-streak {
+  animation: rift-kill-streak 1000ms cubic-bezier(0.22, 0.9, 0.26, 1) forwards;
+}
+
+.animate-rift-kill-streak-shimmer {
+  animation: rift-kill-streak-shimmer 1000ms ease-out forwards;
+}
+
+@keyframes rift-logo-glow {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.985);
+    filter:
+      drop-shadow(0 0 10px rgba(246, 196, 83, 0.18))
+      drop-shadow(0 10px 22px rgba(15, 23, 42, 0.18));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter:
+      drop-shadow(0 0 14px rgba(246, 196, 83, 0.26))
+      drop-shadow(0 12px 26px rgba(15, 23, 42, 0.28));
+  }
+}
+
+.animate-rift-logo-glow {
+  animation: rift-logo-glow 520ms ease-out both;
+}
+
+@keyframes rift-fade-up {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.985);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes rift-banner-shift {
+  0% {
+    opacity: 0.76;
+    transform: translate3d(0, 8px, 0);
+    box-shadow: 0 10px 24px rgba(2, 6, 23, 0.18);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    box-shadow: 0 18px 40px rgba(2, 6, 23, 0.26);
+  }
+}
+
+@keyframes rift-soft-pulse {
+  0%,
+  100% {
+    opacity: 0.92;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 14px 28px rgba(2, 6, 23, 0.18);
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 1px rgba(246, 196, 83, 0.18),
+      0 18px 38px rgba(2, 6, 23, 0.24),
+      0 0 32px rgba(246, 196, 83, 0.08);
+  }
+}
+
+@keyframes rift-sheen-pass {
+  0% {
+    opacity: 0;
+    transform: translate3d(-40%, 0, 0);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(42%, 0, 0);
+  }
+}
+
+@keyframes rift-counter-bump {
+  0% {
+    transform: scale(0.94);
+    opacity: 0.82;
+  }
+
+  55% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes rift-border-glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.02),
+      0 16px 32px rgba(2, 6, 23, 0.18);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 18px 40px rgba(2, 6, 23, 0.24),
+      0 0 30px rgba(96, 165, 250, 0.08);
+  }
+}
+
+@keyframes rift-landing-orb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.16;
+  }
+
+  50% {
+    transform: translate3d(10px, -6px, 0) scale(1.03);
+    opacity: 0.22;
+  }
+}
+
+.rift-blue-glow {
+  text-shadow:
+    0 0 24px rgba(96, 165, 250, 0.9),
+    0 0 54px rgba(37, 99, 235, 0.58);
+}
+
+.rift-red-glow {
+  text-shadow:
+    0 0 24px rgba(248, 113, 113, 0.9),
+    0 0 54px rgba(220, 38, 38, 0.58);
+}
+
+.rift-loss-glow {
+  text-shadow:
+    0 0 24px rgba(248, 113, 113, 0.88),
+    0 0 54px rgba(239, 68, 68, 0.52);
+}
+
+.rift-gank-glow {
+  text-shadow:
+    0 0 18px rgba(244, 114, 182, 0.78),
+    0 0 40px rgba(168, 85, 247, 0.5),
+    0 0 72px rgba(239, 68, 68, 0.32);
+}
+
+.rift-card-glow-blue {
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.16),
+    0 14px 30px rgba(37, 99, 235, 0.22),
+    0 0 34px rgba(96, 165, 250, 0.34);
+}
+
+.rift-card-glow-red {
+  box-shadow:
+    0 0 0 1px rgba(248, 113, 113, 0.16),
+    0 14px 30px rgba(220, 38, 38, 0.22),
+    0 0 34px rgba(248, 113, 113, 0.32);
+}
+
+.rift-card-glow-neutral {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 12px 26px rgba(148, 163, 184, 0.18),
+    0 0 26px rgba(255, 255, 255, 0.2);
+}
+
+.rift-card-glow-gank {
+  box-shadow:
+    0 0 0 1px rgba(216, 180, 254, 0.16),
+    0 16px 34px rgba(88, 28, 135, 0.3),
+    0 0 40px rgba(168, 85, 247, 0.38);
+}
+
+.revealed-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  border-radius: inherit;
+}
+
+.revealed-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rift-sheen);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.group:hover .revealed-face::after,
+.group:focus-visible .revealed-face::after {
+  animation: rift-sheen-pass 820ms var(--rift-ease-emphasis) both;
+}
+
+.revealed-image-frame {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.revealed-image {
+  position: absolute;
+  left: 12%;
+  bottom: 0;
+  width: 80%;
+  height: auto;
+  display: block;
+  max-width: none;
+  max-height: none;
+  transform: translateY(var(--minion-offset-y, 25px))
+    scale(var(--minion-scale, 1));
+  transform-origin: center bottom;
+}
+
+.revealed-image-muted {
+  opacity: 0.28;
+  filter: saturate(0.75) brightness(0.82);
+}
+
+.revealed-overlay {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: inherit;
+}
+
+.revealed-overlay-top,
+.revealed-overlay-bottom {
+  position: relative;
+}
+
+.revealed-overlay-top {
+  top: 0;
+}
+
+.revealed-overlay-bottom {
+  bottom: 0;
+}
+
+.rift-page-enter {
+  animation: rift-fade-up 560ms var(--rift-ease-emphasis) both;
+}
+
+.rift-page-enter-delayed {
+  animation: rift-fade-up 680ms var(--rift-ease-emphasis) both;
+}
+
+.rift-page-enter-soft {
+  animation: rift-fade-up 760ms var(--rift-ease-standard) both;
+}
+
+.rift-interactive-surface {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform var(--rift-duration-medium) var(--rift-ease-standard),
+    border-color var(--rift-duration-medium) var(--rift-ease-standard),
+    background-color var(--rift-duration-medium) var(--rift-ease-standard),
+    box-shadow var(--rift-duration-medium) var(--rift-ease-standard),
+    filter var(--rift-duration-medium) var(--rift-ease-standard),
+    opacity var(--rift-duration-fast) var(--rift-ease-standard);
+  will-change: transform, box-shadow, filter;
+}
+
+.rift-interactive-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rift-sheen);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rift-interactive-surface:hover,
+.rift-interactive-surface:focus-visible {
+  transform: var(--rift-lift-sm);
+  box-shadow:
+    0 20px 40px rgba(2, 6, 23, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 28px rgba(246, 196, 83, 0.08);
+}
+
+.rift-interactive-surface:hover::before,
+.rift-interactive-surface:focus-visible::before {
+  animation: rift-sheen-pass 760ms var(--rift-ease-emphasis) both;
+}
+
+.rift-interactive-surface:active {
+  transform: translate3d(0, 0, 0) scale(0.988);
+}
+
+.rift-button {
+  transition:
+    transform var(--rift-duration-fast) var(--rift-ease-standard),
+    box-shadow var(--rift-duration-medium) var(--rift-ease-standard),
+    border-color var(--rift-duration-medium) var(--rift-ease-standard),
+    background-color var(--rift-duration-medium) var(--rift-ease-standard),
+    color var(--rift-duration-fast) var(--rift-ease-standard),
+    filter var(--rift-duration-fast) var(--rift-ease-standard),
+    opacity var(--rift-duration-fast) var(--rift-ease-standard);
+  will-change: transform, box-shadow, filter;
+}
+
+.rift-button:hover,
+.rift-button:focus-visible {
+  transform: var(--rift-lift-sm);
+}
+
+.rift-button:active {
+  transform: translate3d(0, 0, 0) scale(0.982);
+  filter: brightness(0.98);
+}
+
+.rift-button-primary:hover,
+.rift-button-primary:focus-visible {
+  box-shadow:
+    0 18px 34px rgba(246, 196, 83, 0.24),
+    0 0 24px rgba(246, 196, 83, 0.16);
+}
+
+.rift-button-secondary:hover,
+.rift-button-secondary:focus-visible {
+  box-shadow:
+    0 16px 28px rgba(2, 6, 23, 0.26),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 18px rgba(148, 163, 184, 0.08);
+}
+
+.rift-input {
+  transition:
+    border-color var(--rift-duration-medium) var(--rift-ease-standard),
+    box-shadow var(--rift-duration-medium) var(--rift-ease-standard),
+    background-color var(--rift-duration-medium) var(--rift-ease-standard),
+    color var(--rift-duration-fast) var(--rift-ease-standard),
+    transform var(--rift-duration-fast) var(--rift-ease-standard);
+}
+
+.rift-input:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(2, 6, 23, 0.78);
+}
+
+.rift-input:focus {
+  transform: translate3d(0, -1px, 0);
+  box-shadow:
+    0 0 0 1px rgba(246, 196, 83, 0.28),
+    0 0 0 4px rgba(246, 196, 83, 0.08),
+    0 12px 26px rgba(2, 6, 23, 0.22);
+}
+
+.rift-input::placeholder {
+  transition: color var(--rift-duration-medium) var(--rift-ease-standard);
+}
+
+.rift-input:hover::placeholder,
+.rift-input:focus::placeholder {
+  color: rgba(226, 232, 240, 0.44);
+}
+
+.rift-toggle-shell {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color var(--rift-duration-medium) var(--rift-ease-standard),
+    box-shadow var(--rift-duration-medium) var(--rift-ease-standard),
+    transform var(--rift-duration-fast) var(--rift-ease-standard);
+}
+
+.rift-toggle-shell:hover {
+  transform: translate3d(0, -1px, 0);
+  box-shadow:
+    0 14px 26px rgba(2, 6, 23, 0.24),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.rift-toggle-indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 6px);
+  border-radius: 9999px;
+  transition:
+    transform var(--rift-duration-medium) var(--rift-ease-emphasis),
+    background-color var(--rift-duration-medium) var(--rift-ease-standard),
+    box-shadow var(--rift-duration-medium) var(--rift-ease-standard);
+  box-shadow:
+    0 8px 18px rgba(2, 6, 23, 0.28),
+    0 0 20px rgba(246, 196, 83, 0.12);
+}
+
+.rift-toggle-option {
+  position: relative;
+  z-index: 1;
+  transition:
+    color var(--rift-duration-fast) var(--rift-ease-standard),
+    transform var(--rift-duration-fast) var(--rift-ease-standard),
+    opacity var(--rift-duration-fast) var(--rift-ease-standard);
+}
+
+.rift-toggle-option:hover {
+  color: white;
+}
+
+.rift-banner-animated {
+  animation: rift-banner-shift 360ms var(--rift-ease-standard) both;
+}
+
+.rift-panel-ambient {
+  animation: rift-border-glow 3.2s ease-in-out infinite;
+}
+
+.rift-count-pulse {
+  animation: rift-counter-bump 320ms var(--rift-ease-emphasis);
+}
+
+.rift-modal-surface {
+  animation: rift-command-modal 340ms var(--rift-ease-emphasis) both;
+}
+
+.rift-logo-presence {
+  animation:
+    rift-logo-glow 520ms ease-out both,
+    rift-soft-pulse 4.8s ease-in-out 900ms infinite;
+}
+
+.rift-card-shell {
+  transform: translateZ(0);
+}
+
+.rift-card-shell:hover,
+.rift-card-shell:focus-visible {
+  transform: var(--rift-lift-md);
+}
+
+.rift-card-revealed-clickable:hover,
+.rift-card-revealed-clickable:focus-visible {
+  box-shadow:
+    0 20px 34px rgba(2, 6, 23, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 24px rgba(255, 255, 255, 0.08);
+}
+
+.rift-status-chip {
+  transition:
+    transform var(--rift-duration-fast) var(--rift-ease-standard),
+    box-shadow var(--rift-duration-medium) var(--rift-ease-standard),
+    background-color var(--rift-duration-medium) var(--rift-ease-standard),
+    border-color var(--rift-duration-medium) var(--rift-ease-standard);
+}
+
+.rift-board-enter {
+  animation: rift-fade-up 520ms var(--rift-ease-standard) both;
+}
+
+.rift-landing-left {
+  isolation: isolate;
+}
+
+.rift-landing-ambient {
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.rift-landing-ambient::before {
+  content: "";
+  position: absolute;
+  left: -12%;
+  top: 12%;
+  width: clamp(12rem, 24vw, 18rem);
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(246, 196, 83, 0.14), transparent 58%),
+    radial-gradient(circle at 62% 52%, rgba(96, 165, 250, 0.08), transparent 68%);
+  filter: blur(28px) saturate(0.92);
+  opacity: 0.18;
+  animation: rift-landing-orb-drift 14s ease-in-out infinite;
+}
+
+.rift-landing-ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(246, 196, 83, 0.05), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(30, 41, 59, 0.16), transparent 44%);
+  opacity: 0.72;
+}
+
+.rift-landing-hero {
+  animation: rift-fade-up 380ms var(--rift-ease-standard) both;
+}
+
+.rift-landing-form {
+  animation: rift-fade-up 420ms var(--rift-ease-standard) both;
+}
+
+.rift-landing-support-card {
+  animation: rift-fade-up 440ms var(--rift-ease-standard) both;
+}
+
+.rift-landing-support-card:hover,
+.rift-landing-support-card:focus-visible {
+  transform: translate3d(0, -2px, 0) scale(1.008);
+  box-shadow:
+    0 16px 28px rgba(2, 6, 23, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 18px rgba(246, 196, 83, 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .rift-interactive-surface:hover,
+  .rift-interactive-surface:focus-visible,
+  .rift-button:hover,
+  .rift-button:focus-visible,
+  .rift-card-shell:hover,
+  .rift-card-shell:focus-visible,
+  .rift-toggle-shell:hover,
+  .rift-landing-support-card:hover,
+  .rift-landing-support-card:focus-visible {
+    transform: none;
+  }
+}

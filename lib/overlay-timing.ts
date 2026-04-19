@@ -1,0 +1,1 @@
+export const OVERLAY_DURATION_MS = 2000;
