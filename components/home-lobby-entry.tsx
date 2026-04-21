@@ -9,15 +9,13 @@ import {
 } from "@/lib/local-player";
 import { DEFAULT_CHAMPION_AVATAR } from "@/lib/champion-avatars";
 import {
-  createRoom,
-  ensurePlayerInRoom,
-  fetchRoomByCode,
-  toLobbyError,
-} from "@/lib/lobby-supabase";
-import { generateRoomCode } from "@/lib/room-code";
+  apiCreateRoom,
+  apiJoinRoom,
+} from "@/lib/lobby-api";
+import { toLobbyError } from "@/lib/lobby-supabase";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { missingSupabaseEnvErrorMessage } from "@/lib/supabase";
+import { missingSupabaseEnvErrorMessage } from "@/lib/supabase-errors";
 
 function toErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -99,31 +97,12 @@ export function HomeLobbyEntry() {
 
     try {
       const playerId = getOrCreateLocalPlayerId();
-
-      for (let attempt = 0; attempt < 5; attempt += 1) {
-        try {
-          const code = generateRoomCode();
-          const room = await createRoom(code, playerId);
-          await ensurePlayerInRoom(
-            room,
-            playerId,
-            name,
-            DEFAULT_CHAMPION_AVATAR,
-            true,
-          );
-          router.push(`/room/${room.code}`);
-          return;
-        } catch (error) {
-          const message = toErrorMessage(error);
-          if (message.toLowerCase().includes("duplicate")) {
-            continue;
-          }
-
-          throw error;
-        }
-      }
-
-      setErrorMessage(t("landing.errors.unableCreateRoom"));
+      const { room } = await apiCreateRoom({
+        playerId,
+        displayName: name,
+        avatar: DEFAULT_CHAMPION_AVATAR,
+      });
+      router.push(`/room/${room.code}`);
     } catch (error) {
       console.error("Create room failed:", error);
       setErrorMessage(lobbyErrorMessage(toErrorMessage(error)));
@@ -154,20 +133,12 @@ export function HomeLobbyEntry() {
 
     try {
       const playerId = getOrCreateLocalPlayerId();
-      const room = await fetchRoomByCode(roomCode);
-
-      if (!room) {
-        setErrorMessage(t("landing.errors.roomNotFound"));
-        return;
-      }
-
-      await ensurePlayerInRoom(
-        room,
+      const { room } = await apiJoinRoom({
+        roomCode,
         playerId,
-        name,
-        DEFAULT_CHAMPION_AVATAR,
-        false,
-      );
+        displayName: name,
+        avatar: DEFAULT_CHAMPION_AVATAR,
+      });
       router.push(`/room/${room.code}`);
     } catch (error) {
       const normalizedError = toLobbyError(error);

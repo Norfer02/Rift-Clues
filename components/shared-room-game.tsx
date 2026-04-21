@@ -8,10 +8,6 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { RiftCluesLogo } from "@/components/rift-clues-logo";
 import { SharedMatchEndScreen } from "@/components/shared-match-end-screen";
 import { getDefaultAvatarForRole } from "@/lib/champion-avatars";
-import {
-  revealSharedGameCard,
-  submitSharedSignal,
-} from "@/lib/game";
 import { useI18n } from "@/lib/i18n";
 import {
   getGankCinematicConfig,
@@ -19,11 +15,14 @@ import {
   type GankCinematicVariant,
 } from "@/lib/gank-cinematic";
 import {
-  startSharedRoomGame,
-  returnRoomToLobby,
   toLobbyError,
-  updateRoomGameState,
 } from "@/lib/lobby-supabase";
+import {
+  apiRevealCard,
+  apiReturnRoomToLobby,
+  apiStartGame,
+  apiSubmitSignal,
+} from "@/lib/lobby-api";
 import type { ViewMode } from "@/types/game";
 import type { LobbyPlayer, RoomRecord } from "@/types/lobby";
 
@@ -390,8 +389,11 @@ export function SharedRoomGame({
     try {
       setIsSubmittingSignal(true);
       setErrorMessage("");
-      const nextState = submitSharedSignal(gameState, clue);
-      await updateRoomGameState(room.id, nextState);
+      await apiSubmitSignal({
+        roomId: room.id,
+        playerId: currentPlayer?.player_id ?? "",
+        clue,
+      });
     } catch (error) {
       const normalizedError = toLobbyError(error);
       console.error("Signal submission failed:", normalizedError.message);
@@ -409,8 +411,11 @@ export function SharedRoomGame({
     try {
       setIsRevealingCard(true);
       setErrorMessage("");
-      const nextState = revealSharedGameCard(gameState, cardId);
-      await updateRoomGameState(room.id, nextState);
+      await apiRevealCard({
+        roomId: room.id,
+        playerId: currentPlayer?.player_id ?? "",
+        cardId,
+      });
     } catch (error) {
       const normalizedError = toLobbyError(error);
       console.error("Card reveal failed:", normalizedError.message);
@@ -428,7 +433,10 @@ export function SharedRoomGame({
     try {
       setIsReturningToLobby(true);
       setErrorMessage("");
-      await returnRoomToLobby(room.id);
+      await apiReturnRoomToLobby({
+        roomId: room.id,
+        playerId: currentPlayer?.player_id ?? "",
+      });
     } catch (error) {
       const normalizedError = toLobbyError(error);
       console.error("Return to lobby failed:", normalizedError.message);
@@ -446,7 +454,11 @@ export function SharedRoomGame({
     try {
       setIsStartingRematch(true);
       setErrorMessage("");
-      await startSharedRoomGame(room.id, locale);
+      await apiStartGame({
+        roomId: room.id,
+        playerId: currentPlayer?.player_id ?? "",
+        locale,
+      });
     } catch (error) {
       const normalizedError = toLobbyError(error);
       console.error("Rematch failed:", normalizedError.message);

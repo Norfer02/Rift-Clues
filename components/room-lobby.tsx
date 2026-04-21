@@ -16,16 +16,20 @@ import {
   setStoredDisplayName,
 } from "@/lib/local-player";
 import {
-  ensurePlayerInRoom,
   fetchPlayersByRoomId,
   fetchRoomByCode,
-  leaveRoom,
   sortLobbyPlayers,
-  startSharedRoomGame,
   toLobbyError,
-  updatePlayerSelection,
 } from "@/lib/lobby-supabase";
-import { getSupabase, missingSupabaseEnvErrorMessage } from "@/lib/supabase";
+import {
+  apiEnsurePlayer,
+  apiLeaveRoom,
+  apiRandomizeTeams,
+  apiStartGame,
+  apiUpdatePlayerSelection,
+} from "@/lib/lobby-api";
+import { missingSupabaseEnvErrorMessage } from "@/lib/supabase-errors";
+import { getSupabase } from "@/lib/supabase";
 import type { LobbyPlayer, RoomRecord } from "@/types/lobby";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { SharedRoomGame } from "@/components/shared-room-game";
@@ -386,13 +390,12 @@ export function RoomLobby({
         }
 
         if (storedName.trim()) {
-          await ensurePlayerInRoom(
-            currentRoom,
-            localPlayerId,
-            storedName.trim(),
-            storedAvatar,
-            currentRoom.host_id === localPlayerId,
-          );
+          await apiEnsurePlayer({
+            roomCode: normalizedCode,
+            playerId: localPlayerId,
+            displayName: storedName.trim(),
+            avatar: storedAvatar,
+          });
         } else {
           setErrorMessage(t("roomLobby.enterDisplayNameToJoin"));
         }
@@ -476,11 +479,15 @@ export function RoomLobby({
 
     hasLeftRoomRef.current = true;
 
-    await leaveRoom(currentRoom.id, {
-      id: player.id,
-      player_id: player.player_id,
-      is_host: player.is_host,
-    });
+    await apiLeaveRoom(
+      {
+        roomId: currentRoom.id,
+        playerId: player.player_id,
+      },
+      {
+        keepalive: reason === "pagehide" || reason === "beforeunload",
+      },
+    );
   }, []);
 
   useEffect(() => {
@@ -526,13 +533,12 @@ export function RoomLobby({
         return;
       }
 
-      await ensurePlayerInRoom(
-        currentRoom,
+      await apiEnsurePlayer({
+        roomCode: normalizedCode,
         playerId,
-        trimmedName,
-        getStoredAvatar() || getDefaultAvatarForRole("champion"),
-        currentRoom.host_id === playerId,
-      );
+        displayName: trimmedName,
+        avatar: getStoredAvatar() || getDefaultAvatarForRole("champion"),
+      });
       await loadLobby(currentRoom);
     } catch (error) {
       const normalizedError = toLobbyError(error);
@@ -562,9 +568,10 @@ export function RoomLobby({
           ? currentPlayer.avatar
           : getDefaultAvatarForRole(nextRole));
 
-      await updatePlayerSelection(
-        currentPlayer.id,
-        {
+      await apiUpdatePlayerSelection({
+        roomId: room.id,
+        playerId: currentPlayer.player_id,
+        patch: {
           ...patch,
           avatar: nextAvatar,
           player_status:
@@ -573,8 +580,7 @@ export function RoomLobby({
               ? "active"
               : currentPlayer.player_status),
         },
-        room.status,
-      );
+      });
 
       if (nextAvatar) {
         setStoredAvatar(nextAvatar);
@@ -601,7 +607,11 @@ export function RoomLobby({
           "Starting multiplayer test game with fewer than 2 players.",
         );
       }
-      await startSharedRoomGame(room.id, locale);
+      await apiStartGame({
+        roomId: room.id,
+        playerId: currentPlayer.player_id,
+        locale,
+      });
     } catch (error) {
       const normalizedError = toLobbyError(error);
       console.error("Start game failed:", normalizedError.message);
@@ -616,10 +626,9 @@ export function RoomLobby({
       return;
     }
 
-    const availableSlots = [...slotCards];
     const availablePlayers = [...assignablePlayers];
 
-    if (availableSlots.length === 0 || availablePlayers.length === 0) {
+    if (slotCards.length === 0 || availablePlayers.length === 0) {
       setSuccessMessage(
         availablePlayers.length === 0
           ? t("roomLobby.noPlayersAvailable")
@@ -628,74 +637,23 @@ export function RoomLobby({
       return;
     }
 
-    const shuffle = <T,>(items: T[]) => {
-      const nextItems = [...items];
-
-      for (let index = nextItems.length - 1; index > 0; index -= 1) {
-        const swapIndex = Math.floor(Math.random() * (index + 1));
-        const currentItem = nextItems[index];
-        nextItems[index] = nextItems[swapIndex];
-        nextItems[swapIndex] = currentItem;
-      }
-
-      return nextItems;
-    };
-
-    const shuffledSlots = shuffle(availableSlots);
-    const shuffledPlayers = shuffle(availablePlayers);
-    const assignments = shuffledPlayers.slice(0, shuffledSlots.length);
-
     try {
       setRandomizingTeams(true);
       setErrorMessage("");
       setSuccessMessage("");
 
-      for (const player of shuffledPlayers) {
-        await updatePlayerSelection(
-          player.id,
-          {
-            side: null,
-            role: null,
-            slot_index: null,
-            player_status: "active",
-          },
-          room.status,
-        );
-      }
-
-      for (let index = 0; index < assignments.length; index += 1) {
-        const player = assignments[index];
-        const slot = shuffledSlots[index];
-        const nextAvatar = isAvatarValidForRole(player.avatar, slot.role)
-          ? player.avatar
-          : getDefaultAvatarForRole(slot.role);
-
-        await updatePlayerSelection(
-          player.id,
-          {
-            side: slot.side,
-            role: slot.role,
-            slot_index: slot.slotIndex,
-            avatar: nextAvatar,
-            player_status: "active",
-          },
-          room.status,
-        );
-      }
-
+      const result = await apiRandomizeTeams({
+        roomId: room.id,
+        playerId: currentPlayer.player_id,
+      });
       await loadLobby(room);
-
-      const waitingPlayersAfter = Math.max(
-        shuffledPlayers.length - assignments.length,
-        0,
-      );
       setSuccessMessage(
-        waitingPlayersAfter > 0
+        result.waitingCount > 0
           ? t("roomLobby.reshuffledWaiting", {
-              count: assignments.length,
-              waiting: waitingPlayersAfter,
+              count: result.assignedCount,
+              waiting: result.waitingCount,
             })
-          : t("roomLobby.reshuffled", { count: assignments.length }),
+          : t("roomLobby.reshuffled", { count: result.assignedCount }),
       );
     } catch (error) {
       const normalizedError = toLobbyError(error);
