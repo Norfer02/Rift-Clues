@@ -15,7 +15,10 @@ import {
 import { toLobbyError } from "@/lib/lobby-supabase";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { AdSenseBlock } from "@/components/ads/adsense-block";
 import { missingSupabaseEnvErrorMessage } from "@/lib/supabase-errors";
+
+const homeAdSlot = process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT?.trim();
 
 function toErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -285,6 +288,21 @@ export function HomeLobbyEntry() {
                 <p className="mt-4 rounded-2xl border border-red-400/18 bg-red-500/10 px-4 py-3 text-sm text-red-100">
                   {errorMessage}
                 </p>
+              ) : null}
+
+              {homeAdSlot ? (
+                <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/45 px-4 py-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                    Sponsored
+                  </p>
+                  <div className="mt-3 min-h-[90px]">
+                    {/* Set NEXT_PUBLIC_ADSENSE_HOME_SLOT in Vercel for the homepage ad unit. */}
+                    <AdSenseBlock
+                      adSlot={homeAdSlot}
+                      className="overflow-hidden rounded-xl"
+                    />
+                  </div>
+                </div>
               ) : null}
             </div>
           </div>

@@ -38,29 +38,6 @@ function wrapQueryBuilderForClientWrites<TValue>(value: TValue): TValue {
   });
 }
 
-function createBrowserSafeFetch(fetchImpl: typeof fetch): typeof fetch {
-  return async (input, init) => {
-    const requestUrl =
-      typeof input === "string"
-        ? input
-        : input instanceof URL
-          ? input.toString()
-          : input.url;
-    const requestMethod =
-      init?.method ??
-      (typeof Request !== "undefined" && input instanceof Request ? input.method : "GET");
-    const normalizedMethod = requestMethod.toUpperCase();
-    const isSupabaseRestRequest = requestUrl.includes("/rest/v1/");
-    const isWriteMethod = !["GET", "HEAD", "OPTIONS"].includes(normalizedMethod);
-
-    if (isBrowser() && isSupabaseRestRequest && isWriteMethod) {
-      throw new Error(blockedClientSupabaseWriteErrorMessage);
-    }
-
-    return fetchImpl(input, init);
-  };
-}
-
 function getConfiguredSupabaseClient() {
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error(missingSupabaseEnvErrorMessage, {
@@ -71,11 +48,7 @@ function getConfiguredSupabaseClient() {
   }
 
   if (!supabaseClient) {
-    supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        fetch: createBrowserSafeFetch(fetch),
-      },
-    });
+    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
   }
 
   return supabaseClient;
