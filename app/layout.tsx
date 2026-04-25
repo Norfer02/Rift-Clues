@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { AppFooter } from "@/components/app-footer";
 import { I18nProvider } from "@/lib/i18n";
@@ -18,6 +19,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          id="adsense"
+          strategy="afterInteractive"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4018439518152789"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <I18nProvider>
           {children}
