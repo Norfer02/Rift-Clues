@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { submitRoomSignal, toLobbyError } from "@/lib/server/lobby-service";
 import { requireLobbySession } from "@/lib/server/lobby-session";
